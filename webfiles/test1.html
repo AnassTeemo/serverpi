@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+	function loadXMLDoc()
+	{
+		var xmlhttp;
+		var txt,x,i;
+		xmlhttp=new XMLHttpRequest();
+		xmlhttp.onreadystatechange=function()
+			{
+				if (xmlhttp.readyState==4 && xmlhttp.status==200)
+				{
+				
+					xmlDoc=xmlhttp.responseXML;
+					<!-- alert("External content loaded successfully!"); -->
+					x=xmlDoc.getElementsByTagName("bit");
+					for (i=0;i<x.length;i++)
+					{
+						if(x[i].getAttribute("value") == "1")
+						txt= '<div align="center"><img src="led'+(i+1)+'On.JPG" width="602" height="344" style="position:absolute;z-index:4;"/></div>';		
+					}
+
+					document.getElementById("myDiv").innerHTML=txt;
+				}
+			}
+		xmlhttp.open("GET","testbit.xml",true);
+		xmlhttp.send();
+	}
+</script>
+<script>
+var myVar=setInterval(function(){loadXMLDoc()},500);
+</script>
+</head>
+
+<body>
+
+<h2></h2>
+<div id="myDiv"></div>
+<button type="button" onclick="loadXMLDoc()">load simu</button>
+ 
+</body>
+</html>

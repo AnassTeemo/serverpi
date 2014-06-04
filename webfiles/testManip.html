@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Document sans nom</title>
+
+<script type="text/javascript">
+	function sendRequest(url)
+	{
+			var xmlhttp;
+			if (window.XMLHttpRequest)
+			{// code for IE7+, Firefox, Chrome, Opera, Safari
+				xmlhttp=new XMLHttpRequest();
+			}
+			else
+			{// code for IE6, IE5
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			}
+
+			xmlhttp.onreadystatechange=function()
+			{
+				if (xmlhttp.readyState==4 && xmlhttp.status==200)
+				{
+					bits=xmlhttp.responseXML.documentElement.getElementsByTagName("bits");
+					bit=bits.getElementsByTagName("bit");
+					{
+						try
+							{
+document.write('lecture success');
+								for(i = 0;i < bit.length; i++)
+								{
+									if(bit[i].firstChild.nodeValue == "1")
+									{
+										document.write('<div align="center"><img src="led'+i+'On.JPG" width="602" height="344" style="position:absolute;z-index:4;"/>');
+
+									}
+								}
+							}
+						catch (er)
+							{
+								document.write("erreur de recupération de bit !!");
+							}
+					}
+				}
+			}
+		  
+		});
+		xmlhttp.open("GET",url,true);
+		xmlhttp.send();
+
+
+	}
+</script>
+</head>
+
+<body>
+	<script>
+		window.setInterval(function(){sendRequest("webfiles/testbit.xml")}, 1000); 
+	</script>
+</body>
+</html>
