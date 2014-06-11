@@ -25,21 +25,17 @@
 #include <time.h>
 #include <vector>
 #include <iostream>
+#include <fstream>
+#include <pthread.h>
 
-namespace net{
 
-extern char param[32];
-extern pthread_mutex_t mutexf;
 
-class HttpServer {
-public:
-	HttpServer(int port);
-	virtual ~HttpServer();
+	extern char param[32];
+    extern pthread_mutex_t mutexf;
+
 
 	void start();
 
-
-private:
 	int cree_socket_ecoute(int port);
 	void fin_connexion(FILE* stream,const char* msg);
 	void my_fgets(char* buf, int size, FILE* stream);
@@ -49,13 +45,12 @@ private:
 	char* type_fichier(char* chemin);
 	void envoie_fichier(FILE* stream, char* chemin, int keepalive);
 	int get_param(char *url,char* param);
-	void traite_connexion(int);
+	void* traite_connexion(void*);
 	void exit_error(const char *chaine);
+	void writeInXmlFile(char *vec);
 
-private:
-	int port,master;
-};
 
-}
+
+
 
 #endif /* HTTPSERVER_H_ */

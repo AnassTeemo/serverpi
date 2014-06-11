@@ -6,29 +6,30 @@
  */
 
 #include "HttpServer.h"
-namespace net{
+pthread_mutex_t mutexf = PTHREAD_MUTEX_INITIALIZER;
 
-HttpServer::HttpServer(int _port):port(_port) {
-	master = cree_socket_ecoute(port);
+void start(){
+		int listen_fd;
+		int client;
+		pthread_t id;
 
-}
+		listen_fd=cree_socket_ecoute(9090);
 
-HttpServer::~HttpServer() {
-	// TODO Auto-generated destructor stub
-}
-
-void HttpServer::start(){
-	int slave;
-
-	slave = accept(master, NULL, 0);
-	if (slave==-1) {
+		while (1) {
+			client = accept(listen_fd, NULL, 0);
+			if (client==-1) {
 				if (errno!=EINTR && errno!=ECONNABORTED) exit_error("échec de accept");
 			} else {
-				traite_connexion(slave);
+				errno = pthread_create(&id, NULL, traite_connexion, (void*)client);
+				if (errno) exit_error("échec de pthread_create");
+				errno = pthread_detach(id);
+				if (errno) exit_error("échec de pthread_detach");
 			}
+
+		}
 }
 
-int HttpServer::cree_socket_ecoute(int port) {
+int cree_socket_ecoute(int port) {
 	int listen_fd;
 	struct sockaddr_in addr;
 	int one = 1;
@@ -48,17 +49,17 @@ int HttpServer::cree_socket_ecoute(int port) {
 	return(listen_fd);
 }
 
-void HttpServer::fin_connexion(FILE* stream,const char* msg) {
+void fin_connexion(FILE* stream,const char* msg) {
 	fprintf(stderr, "fin de connexion (%s, errno=%s)\n", msg, strerror(errno));
 	fclose(stream);
 	pthread_exit(NULL);
 }
 
-void HttpServer::my_fgets(char* buf, int size, FILE* stream) {
+void my_fgets(char* buf, int size, FILE* stream) {
 	if (!fgets(buf, size-1, stream)) fin_connexion(stream, "échec de fgets");
 }
 
-void HttpServer::lit_get(FILE* stream, char* url, int size) {
+void lit_get(FILE* stream, char* url, int size) {
 	char buf[4096];
 	int i,j;
 
@@ -73,21 +74,22 @@ void HttpServer::lit_get(FILE* stream, char* url, int size) {
 	for (; buf[i]==' '; i++);
 	if (strncmp(buf+i, "HTTP/1.1", 8))
 		fin_connexion(stream, "la version n'est pas HTTP/1.1");
+
 }
 
-int HttpServer::lit_en_tetes(FILE* stream) {
+int lit_en_tetes(FILE* stream) {
 	char buf[4096];
 	int keepalive = 1;
 	while (1) {
 		my_fgets(buf, sizeof(buf), stream);
 		if (buf[0]=='\n' || buf[0]=='\r') break;
-		if (!strncasecmp(buf, "Connection:", 11) || strstr(buf, "close"))
+		if (strncasecmp(buf, "Connection:", 11) || strstr(buf, "close")) //g enlevé le ! devant strncasecmp
 			keepalive = 0;
 	}
 	return(keepalive);
 }
 
-void HttpServer::envoie_404(FILE* stream, char* url) {
+void envoie_404(FILE* stream, char* url) {
 	fprintf(stream, "HTTP/1.1 404 Not found\r\n");
 	fprintf(stream, "Connection: close\r\n");
 	fprintf(stream, "Content-type: text/html\r\n");
@@ -100,7 +102,7 @@ void HttpServer::envoie_404(FILE* stream, char* url) {
 	fin_connexion(stream, "erreur 404");
 }
 
-char* HttpServer::type_fichier(char* chemin) {
+char* type_fichier(char* chemin) {
 	int len = strlen(chemin);
 	if (!strcasecmp(chemin+len-5, ".html") ||
 		!strcasecmp(chemin+len-4, ".htm")) return "text/html";
@@ -113,7 +115,7 @@ char* HttpServer::type_fichier(char* chemin) {
 	return("text/ascii");
 }
 
-void HttpServer::envoie_fichier(FILE* stream, char* chemin, int keepalive) {
+void envoie_fichier(FILE* stream, char* chemin, int keepalive) {
 	char modiftime[30];
 	char curtime[30];
 	struct timeval  tv;
@@ -171,7 +173,7 @@ void HttpServer::envoie_fichier(FILE* stream, char* chemin, int keepalive) {
 	close(fd);
 }
 
-int HttpServer::get_param(char *url,char* param){
+int get_param(char *url,char* param){
 
 	std::string surl(url),rest="NO REST!";
 	int pos = surl.find("?");
@@ -193,40 +195,68 @@ int HttpServer::get_param(char *url,char* param){
 
 }
 
-void HttpServer::traite_connexion(int slave) {
+void* traite_connexion(void* arg) {
+	int slave = (int)arg;
 	FILE* stream = fdopen(slave, "r+");
 	char url[4096];
 	int keepalive = 1;
 
 	errno = 0;
 	setlinebuf(stream);
-	while (keepalive) {
+	while (keepalive){
  		lit_get(stream, url, sizeof(url));
 
- 		if(get_param(url,param)){
-
- 		 std::cout << "my 32 bits word is: ";
- 		 for (int j=0;j<32;j++)
- 		 std::cout << ' ' << param[j];
- 		 std::cout << '\n';
-
- 		}
-		keepalive = lit_en_tetes(stream);
 		printf("URL: %s\n",url);
-		pthread_mutex_lock(&mutexf);
-		envoie_fichier(stream, url, keepalive);
-		pthread_mutex_unlock(&mutexf);
-	}
-	puts("HEREE!!");
-	fin_connexion(stream, "ok");
 
+		if(!strcasecmp(url,"SEND_BYTE")){
+			char buffer[128],vec[32];
+
+			my_fgets(buffer,sizeof(buffer),stream);
+
+			memcpy(vec,buffer,32);
+
+			for(int j=0;j<32;j++)printf("%c ",vec[j]);
+			pthread_mutex_lock(&mutexf);
+			writeInXmlFile(vec);
+			pthread_mutex_unlock(&mutexf);
+			puts("wsel vec");
+		}
+		else if (!strcasecmp(url,"laal")) return 0;
+		else {
+			keepalive = lit_en_tetes(stream);
+			pthread_mutex_lock(&mutexf);
+			envoie_fichier(stream, url, keepalive);
+			pthread_mutex_unlock(&mutexf);
+
+		}
+
+	}
+
+	fin_connexion(stream, "ok");
+	return(NULL);
 
 }
 
-void HttpServer::exit_error(const char *chaine) {
+void exit_error(const char *chaine) {
 	if (errno!=0) perror(chaine);
 	else printf("ERREUR %s\n",chaine);
 	exit(EXIT_FAILURE);
 }
 
+void writeInXmlFile(char *vec){
+	std::ofstream myfile;
+	myfile.open("webfiles/testbit.xml");
+
+	if(myfile.is_open()){
+	myfile << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+	       <<  "<bits>\n";
+
+	for(int i=0;i<32;i++){
+		myfile << "<bit id=\"" << i << "\" value=\"" << vec[i] << "\" />\n";
+	}
+
+	myfile << "</bits>\n";
+	myfile.close();
+
+}
 }

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript">
+	var currentDate = new Date();
+	var i = 0;
+	function sendRequest(tab)
+	{
+				document.write('<style>img.back{position:absolute;left:0px;top:55px;z-index:-1;}img.led1{position:absolute;left:80px;top:10px;z-index:0;}img.led2{position:absolute;left:140px;top:10px;z-index:0;}img.led3{position:absolute;left:200px;top:10px;z-index:0;}img.led4{position:absolute;left:260px;top:10px;z-index:0;}</style><img class="led1" src="led/led_'+tab[0]+'.png" width="200" height="200" /><img class="led2" src="led/led_'+tab[1]+'.png" width="200" height="200" /><img class="led3" src="led/led_'+tab[2]+'.png" width="200" height="200" /><img class="led4" src="led/led_'+tab[3]+'.png" width="200" height="200" /><img class="back" src="led/maquette.jpg" width="610" height="350" />');
+						
+	}
+</script>
+</head>
+
+<body>
+
+	<script>
+		var vals=new Array("1", "0", "1", "0");
+		window.setInterval(function(){sendRequest(vals)}, 1000); 
+	</script>
+	
+	<!--<img class="front_1" src="led/ledOff.png" width="200" height="200" /><img class="front_2" src="led/ledOn.png" width="200" height="200" /><img class="front_3" src="led/ledOn.png" width="200" height="200" /><img class="front_4" src="led/ledOff.png" width="200" height="200" /><img class="back" src="led/maquette.jpg" width="610" height="350" />-->
+</body>
+</html>

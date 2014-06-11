@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+	function loadXMLDoc()
+	{
+		var xmlhttp;
+		var txt,x,i;
+		var tab = new Array();
+		xmlhttp=new XMLHttpRequest();
+		xmlhttp.onreadystatechange=function()
+			{
+				if (xmlhttp.readyState==4 && xmlhttp.status==200)
+				{
+				
+					xmlDoc=xmlhttp.responseXML;
+					x=xmlDoc.getElementsByTagName("bit");
+						for(i=0;i<x.length;i++) {tab[i] = x[i].getAttribute("value");}
+						txt= '<style>img.back{position:absolute;left:0px;top:55px;z-index:-1;}img.led1{position:absolute;left:80px;top:10px;z-index:0;}img.led2{position:absolute;left:140px;top:10px;z-index:0;}img.led3{position:absolute;left:200px;top:10px;z-index:0;}img.led4{position:absolute;left:260px;top:10px;z-index:0;}</style><img class="led1" src="led/led_'+tab[0]+'.png" width="200" height="200" /><img class="led2" src="led/led_'+tab[1]+'.png" width="200" height="200" /><img class="led3" src="led/led_'+tab[2]+'.png" width="200" height="200" /><img class="led4" src="led/led_'+tab[3]+'.png" width="200" height="200" /><img class="back" src="led/maquette.jpg" width="610" height="350" />';	
+
+					document.getElementById("myDiv").innerHTML=txt;
+				}
+			}
+		xmlhttp.open("GET","testbit.xml",true);
+		xmlhttp.send();
+	}
+</script>
+<script>
+var myVar=setInterval(function(){loadXMLDoc()},500);
+</script>
+</head>
+
+<body>
+
+<h2>Mes belles LEDS !!!!!!!!!!! : </h2>
+<div id="myDiv"></div> 
+</body>
+</html>

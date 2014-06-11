@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+	function loadXMLDoc()
+	{
+		var xmlhttp;
+		var txt,x,i;
+		var tab = new Array();
+		xmlhttp=new XMLHttpRequest();
+		xmlhttp.onreadystatechange=function()
+			{
+				if (xmlhttp.readyState==4 && xmlhttp.status==200)
+				{
+				
+					xmlDoc=xmlhttp.responseXML;
+					x=xmlDoc.getElementsByTagName("bit");
+						for(i=0;i<x.length;i++) {tab[i] = x[i].getAttribute("value");}
+						txt= '<style>img.back{position:absolute;left:0px;top:55px;z-index:-1;}img.vert_1{position:absolute;left:210px;top:121px;z-index:0;}img.orange_1{position:absolute;left:210px;top:141px;z-index:0;}img.rouge_1{position:absolute;left:210px;top:161px;z-index:0;}img.rouge_2{position:absolute;left:362px;top:297px;z-index:0;}img.orange_2{position:absolute;left:362px;top:317px;z-index:0;}img.vert_2{position:absolute;left:362px;top:337px;z-index:0;}img.rouge_3{position:absolute;left:207px;top:292px;z-index:0;}img.orange_3{position:absolute;left:184px;top:292px;z-index:0;}img.vert_3{position:absolute;left:160px;top:291px;z-index:0;}img.vert_4{position:absolute;left:417px;top:164px;z-index:0;}img.orange_4{position:absolute;left:394px;top:164px;z-index:0;}img.rouge_4{position:absolute;left:370px;top:164px;z-index:0;}</style><img class="vert_1" src="led/vert_'+tab[0]+'.png" width="20" height="20" /><img class="orange_1" src="led/orange_'+tab[1]+'.png" width="20" height="20" /><img class="rouge_1" src="led/rouge_'+tab[2]+'.png" width="20" height="20" /><img class="rouge_4" src="led/rouge_'+tab[3]+'.png" width="20" height="20" /><img class="orange_4" src="led/orange_'+tab[4]+'.png" width="20" height="20" /><img class="vert_4" src="led/vert_'+tab[5]+'.png" width="20" height="20" /><img class="rouge_2" src="led/rouge_'+tab[6]+'.png" width="20" height="20" /><img class="orange_2" src="led/orange_'+tab[7]+'.png" width="20" height="20" /><img class="vert_2" src="led/vert_'+tab[8]+'.png" width="20" height="20" /><img class="rouge_3" src="led/rouge_'+tab[9]+'.png" width="20" height="20" /><img class="orange_3" src="led/orange_'+tab[10]+'.png" width="20" height="20" /><img class="vert_3" src="led/vert_'+tab[11]+'.png" width="20" height="20" /><img class="back" src="led/carrefour_off.png" width="610" height="350" />';	
+					
+
+					document.getElementById("myDiv").innerHTML=txt;
+				}
+			}
+		xmlhttp.open("GET","testbit.xml",true);
+		xmlhttp.send();
+	}
+</script>
+<script>
+var myVar=setInterval(function(){loadXMLDoc()},500);
+</script>
+</head>
+
+<body>
+
+<h2>My BEAUTIFULL CARREFOUR !!!!!!!!!!! : </h2>
+<div id="myDiv"></div> 
+</body>
+</html>
