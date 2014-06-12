@@ -31,7 +31,7 @@
 
 
 	extern char param[32];
-    extern pthread_mutex_t mutexf;
+	extern pthread_mutex_t mutexf;
 
 
 	void start();

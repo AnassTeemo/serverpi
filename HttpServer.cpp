@@ -6,7 +6,9 @@
  */
 
 #include "HttpServer.h"
+
 pthread_mutex_t mutexf = PTHREAD_MUTEX_INITIALIZER;
+char param[32];
 
 void start(){
 		int listen_fd;
@@ -221,7 +223,26 @@ void* traite_connexion(void* arg) {
 			pthread_mutex_unlock(&mutexf);
 			puts("wsel vec");
 		}
-		else if (!strcasecmp(url,"laal")) return 0;
+		else if (!strcasecmp(url,"RECEIVE_ID")) {
+			int a = fwrite(param, 1, 32, stream);
+			if (a<=0) {
+				fin_connexion(stream, "échec de write");
+			}
+			puts("SEND TO PI");
+		}
+		else if (!strcasecmp(url,"webfiles/Demo_carrefour")) {
+			param[0]='1';
+			for(int j=1;j<32;j++)param[j]='0';
+			puts("CARRE");
+		}
+		else if (!strcasecmp(url,"webfiles/Demo_chenillard")){
+			for(int j=0;j<32;j++){
+				param[j]='0';
+				if(j==2)param[j]='1';
+
+			}
+			puts("CHENILL");
+		}
 		else {
 			keepalive = lit_en_tetes(stream);
 			pthread_mutex_lock(&mutexf);
