@@ -32,6 +32,8 @@ var myVar=setInterval(function(){loadXMLDoc()},500);
 </head>
 
 <body>
+
+<h2>CHENILLARD : </h2>
 <div id="myDiv"></div> 
 </body>
 </html>

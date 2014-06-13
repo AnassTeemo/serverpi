@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<html>
+<head>
+<title>Demonstration</title>
+<script>
+
+function sendRequest()
+{
+	var liste, valeur,txt;
+	var xmlhttp=new XMLHttpRequest();
+	liste = document.getElementById("ListeElement");
+	valeur = liste.options[liste.selectedIndex].value;
+	if(valeur=="Demo_carrefour") txt='<iframe name="content" src="test4.html" width="610" height="450" align="center" marginheight="0" marginwidth="0" scrolling="auto" ></iframe>';
+	else{
+		if(valeur=="Demo_chenillard") txt='<iframe name="content" src="Demo_Led_4Bit.html" width="610" height="450" align="center" marginheight="0" marginwidth="0" scrolling="auto" ></iframe>';
+	}
+	document.getElementById("myDiv").innerHTML=txt;
+	xmlhttp.open("GET",valeur,true);
+	xmlhttp.send();
+	
+	
+}
+</script>
+<p><img src="led/entete.jpg" width="1250" height="200" /></p>
+</head>
+<center>
+		<div align="center">
+		<p> Choix des démonstarions : </p>
+		<br><br>
+		<select id="ListeElement" name="selectDemo"> 
+		   <option value="Demo_carrefour">Démo carrefour</option> 
+		   <option value="Demo_chenillard">Démo chenillard</option> 
+		   <option value="Demo_led">Démo led</option> 
+		</select>
+		<button type="button" onclick="sendRequest()"> Envoyer </button>
+		</div>
+		<div id="myDiv" width="610" height="450" align="center"></div>
+	
+</center>
+</html>
